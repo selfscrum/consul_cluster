@@ -88,7 +88,7 @@ resource "tfe_variable" "ws_network_zone" {
 }
 
 resource "tfe_variable" "ws_network_component" {
-    key          = "network_zone"
+    key          = "network_component"
     value        = lookup(local.system, "network_component")
     category     = "terraform"
     workspace_id = tfe_workspace.boundary_network.id
