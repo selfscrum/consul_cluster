@@ -82,6 +82,6 @@ resource "hcloud_server" "consul" {
 resource "hcloud_server_network" "internal_consul" {
   network_id = data.terraform_remote_state.network.outputs.network_id
   server_id  = hcloud_server.consul.id
-  ip = cidrhost(split("-", data.terraform_remote_state.network.outputs.network_subnet_id)[1], 10)
+  ip = cidrhost(split("-", data.terraform_remote_state.network.outputs.private_subnet_id)[1], 10)
 }
 
