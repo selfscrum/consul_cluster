@@ -23,7 +23,7 @@ data "terraform_remote_state" "network" {
   config = {
     organization = "selfscrum"
     workspaces = {
-      name = var.network
+      name = var.network_component
     }
   }
 }
@@ -80,8 +80,8 @@ resource "hcloud_server" "consul" {
 }
 
 resource "hcloud_server_network" "internal_consul" {
-  network_id = hcloud_network.mynet.id
+  network_id = data.terraform_remote_state.network.outputs.network_id
   server_id  = hcloud_server.consul.id
-  ip = cidrhost(hcloud_network_subnet.private.ip_range, 5) # First host in the private_range
+  ip = cidrhost(split("-", data.terraform_remote_state.network.outputs.network_subnet_id)[1], 10)
 }
 

@@ -31,6 +31,7 @@ resource "tfe_variable" "ws_env_name" {
     description  = "Name of the Component"
 }
 
+
 resource "tfe_variable" "ws_env_stage" {
     key          = "env_stage"
     value        = lookup(local.system, "env_stage")
