@@ -10,3 +10,5 @@ terraform {
     }
   }
 }
+
+resource "random_pet" "name" {}
