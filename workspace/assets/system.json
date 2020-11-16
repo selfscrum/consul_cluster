@@ -1,0 +1,14 @@
+{
+    "github_user" : "selfscrum",
+    "github_repo" : "consul_cluster",
+    "tfc_organization" :"selfscrum",
+    "workspace" : "consul_cluster",
+    "env_name" : "consul", 
+    "env_stage" : "dev",
+    "location" : "nbg1",
+    "system_function" : "CONSUL",
+    "consul_image" :"ubuntu-20.04",
+    "consul_type" :"cpx11",
+    "keyname" :"tfh_key",
+    "network_zone" :"eu-central",
+}
