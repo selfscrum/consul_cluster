@@ -30,14 +30,15 @@ data "terraform_remote_state" "network" {
 #
 
 resource "hcloud_server" "consul" {
-  name        = format("%s-%s-CONSUL", var.env_stage, var.env_name)
+  count = 3
+  name        = format("%s-%s-CONSUL-%d", var.env_stage, var.env_name, count.index)
   image       = var.consul_image
   server_type = var.consul_type
   location    = var.location
   labels      = {
       "Name"     = var.env_name
       "Stage"    = var.env_stage
-      "CONSUL" = 0
+      "CONSUL" = count.index
   }
   ssh_keys    = [ var.keyname ]
   user_data   = <<-CONSUL_EOF
@@ -75,8 +76,11 @@ resource "hcloud_server" "consul" {
 }
 
 resource "hcloud_server_network" "internal_consul" {
+  count=3
   network_id = data.terraform_remote_state.network.outputs.network_id
-  server_id  = hcloud_server.consul.id
-  ip = cidrhost(split("-", data.terraform_remote_state.network.outputs.private_subnet_id)[1], 10)
+  server_id  = element(hcloud_server.consul.*.id, count.index)
+  # this split is a temporary hack until Hetzner has "real" subnet objects and not just a shadow API. 
+  # the subnet id is a combination of network id and subnet CIDR, e.g. "123456-10.0.2.0/24")
+  ip = cidrhost(split("-", data.terraform_remote_state.network.outputs.private_subnet_id)[1], 10+count.index)
 }
 
