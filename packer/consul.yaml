@@ -1,0 +1,46 @@
+{
+  "min_packer_version": "0.12.0",
+  "variables": {
+    "consul_version": "1.8.5",
+    "ca_public_key_path": "{{template_dir}}/.ca.crt.pem",
+    "tls_public_key_path": "{{template_dir}}/.consul.crt.pem",
+    "tls_private_key_path": "{{template_dir}}/.consul.key.pem"
+  },
+  "builders": [{
+    "image": "ubuntu-20.04",
+    "name": "ubuntu20-consul",
+    "type": "hcloud",
+    "location": "nbg1",
+    "server_type" : "cpx11",
+    "snapshot_name": "ubuntu20-consul",
+    "ssh_username": "root"
+  }],
+  "provisioners": [{
+    "type": "file",
+    "source": "{{user `ca_public_key_path`}}",
+    "destination": "/tmp/ca.crt.pem"
+  },{
+    "type": "file",
+    "source": "{{user `tls_public_key_path`}}",
+    "destination": "/tmp/consul.crt.pem"
+  },{
+    "type": "file",
+    "source": "{{user `tls_private_key_path`}}",
+    "destination": "/tmp/consul.key.pem"
+  },{
+    "type": "shell",
+    "inline": ["mkdir -p /tmp/consul_cluster"]
+  },{
+    "type": "file",
+    "source": "{{template_dir}}/../",
+    "destination": "/tmp/consul_cluster"
+  },{
+    "type": "shell",
+    "inline": [
+      "sudo chmod +x /tmp/consul_cluster/modules/install-consul/install-consul",
+      "/tmp/consul_cluster/modules/install-consul/install-consul --version {{user `consul_version`}} --ca-file-path /tmp/ca.crt.pem --cert-file-path /tmp/consul.crt.pem --key-file-path /tmp/consul.key.pem",
+      "rm -rf /tmp/consul_cluster"
+    ],
+    "pause_before": "30s"
+  }]
+}
