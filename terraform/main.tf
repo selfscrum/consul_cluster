@@ -70,7 +70,7 @@ resource "hcloud_server" "consul" {
                   - sed -i '$a AllowUsers desixma' /etc/ssh/sshd_config
                   - sleep 5
                   - apt update -y
-                  - apt install -y postgresql postgresql-contrib
+                  - apt install -y docker
                   - reboot
                 CONSUL_EOF  
 }
