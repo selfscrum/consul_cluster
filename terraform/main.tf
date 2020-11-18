@@ -56,7 +56,6 @@ module "consul_servers" {
   labels            = {
                       "Name"   = var.env_name
                       "Stage"  = var.env_stage
-                      "CONSUL" = count.index
   }
   ssh_key           = var.keyname
   network_id        = data.terraform_remote_state.network.outputs.network_id

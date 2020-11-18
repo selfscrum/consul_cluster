@@ -16,7 +16,7 @@ resource "hcloud_server" "consul" {
 }
 
 resource "hcloud_server_network" "internal_consul" {
-  count=var.cluster_size
+  count = var.cluster_size
   network_id = var.network_id
   server_id  = element(hcloud_server.consul.*.id, count.index)
   # this split is a temporary hack until Hetzner has "real" subnet objects and not just a shadow API. 
