@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    hcloud = {
+      source = "hetznercloud/hcloud"
+    }
+  }
+  required_version = ">= 0.13"
+}
+
 variable "access_token" {}
 variable "env_name"  { }
 variable "env_stage" { }
