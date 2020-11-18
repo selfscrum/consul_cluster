@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.12.26"
-}
-
 variable "access_token" {}
 variable "env_name"  { }
 variable "env_stage" { }
