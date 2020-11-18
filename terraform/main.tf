@@ -48,6 +48,7 @@ data "terraform_remote_state" "network" {
 module "consul_servers" {
   source = "../modules/consul-cluster"
   cluster_name      = "${var.cluster_name}-server"
+  cluster_name      = var.env_stage
   cluster_size      = var.num_servers
   image             = var.consul_image
   server_type       = var.consul_type
