@@ -17,6 +17,15 @@ variable "consul_type" {}
 variable "keyname" {} 
 variable "network_zone" {}
 variable "network_component" {}
+variable "cluster_name" {}
+variable "num_servers" {}
+variable "cluster_tag_key" {}
+variable "enable_gossip_encryption" {}
+variable "enable_rpc_encryption" {}
+variable "gossip_encryption_key" {}
+variable "ca_path" {}
+variable "cert_file_path" {}
+variable "key_file_path" {}
 
 provider "hcloud" {
   token = var.access_token
