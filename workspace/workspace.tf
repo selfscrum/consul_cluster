@@ -95,3 +95,75 @@ resource "tfe_variable" "ws_network_component" {
     workspace_id = tfe_workspace.consul_cluster.id
     description  = "Hetzner Network Component where the new component will reside in"
 }
+
+resource "tfe_variable" "ws_cluster_name" {
+    key          = "cluster_name"
+    value        = lookup(local.system, "cluster_name")
+    category     = "terraform"
+    workspace_id = tfe_workspace.consul_cluster.id
+    description  = "cluster_name of the Component"
+}
+
+resource "tfe_variable" "ws_num_servers" {
+    key          = "num_servers"
+    value        = lookup(local.system, "num_servers")
+    category     = "terraform"
+    workspace_id = tfe_workspace.consul_cluster.id
+    description  = "num_servers of the Component"
+}
+
+resource "tfe_variable" "ws_cluster_tag_key" {
+    key          = "cluster_tag_key"
+    value        = lookup(local.system, "cluster_tag_key")
+    category     = "terraform"
+    workspace_id = tfe_workspace.consul_cluster.id
+    description  = "cluster_tag_key of the Component"
+}
+
+resource "tfe_variable" "ws_enable_gossip_encryption" {
+    key          = "enable_gossip_encryption"
+    value        = lookup(local.system, "enable_gossip_encryption")
+    category     = "terraform"
+    workspace_id = tfe_workspace.consul_cluster.id
+    description  = "enable_gossip_encryption of the Component"
+}
+
+resource "tfe_variable" "ws_enable_rpc_encryption" {
+    key          = "enable_rpc_encryption"
+    value        = lookup(local.system, "enable_rpc_encryption")
+    category     = "terraform"
+    workspace_id = tfe_workspace.consul_cluster.id
+    description  = "enable_rpc_encryption of the Component"
+}
+
+resource "tfe_variable" "ws_gossip_encryption_key" {
+    key          = "gossip_encryption_key"
+    value        = lookup(local.system, "gossip_encryption_key")
+    category     = "terraform"
+    workspace_id = tfe_workspace.consul_cluster.id
+    description  = "gossip_encryption_key of the Component"
+}
+
+resource "tfe_variable" "ws_ca_path" {
+    key          = "ca_path"
+    value        = lookup(local.system, "ca_path")
+    category     = "terraform"
+    workspace_id = tfe_workspace.consul_cluster.id
+    description  = "ca_path of the Component"
+}
+
+resource "tfe_variable" "ws_cert_file_path" {
+    key          = "cert_file_path"
+    value        = lookup(local.system, "cert_file_path")
+    category     = "terraform"
+    workspace_id = tfe_workspace.consul_cluster.id
+    description  = "cert_file_path of the Component"
+}
+
+resource "tfe_variable" "ws_key_file_path" {
+    key          = "key_file_path"
+    value        = lookup(local.system, "key_file_path")
+    category     = "terraform"
+    workspace_id = tfe_workspace.consul_cluster.id
+    description  = "key_file_path of the Component"
+}

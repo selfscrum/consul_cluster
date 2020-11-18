@@ -1,5 +1,5 @@
 # LICENSE INFO
-The orginal `install-consul` script is part of the [terraform-aws-consul](https://github.com/hashicorp/terraform-aws-consul) package and are licensed with Apache 2.0.
+The orginal `install-consul` script is part of the [terraform-aws-consul](https://github.com/hashicorp/terraform-aws-consul) package and is licensed under Apache 2.0 conditions.
 
 I modified the script to remove the aws cli installation command.
 

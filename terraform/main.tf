@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 0.12.26"
+}
+
 variable "access_token" {}
 variable "env_name"  { }
 variable "env_stage" { }
@@ -23,63 +27,54 @@ data "terraform_remote_state" "network" {
   }
 }
 
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY THE CONSUL SERVER NODES
+# ---------------------------------------------------------------------------------------------------------------------
 
-####
-# Consul Server
-#
-#
-
-resource "hcloud_server" "consul" {
-  count = 3
-  name        = format("%s-%s-CONSUL-%d", var.env_stage, var.env_name, count.index)
-  image       = var.consul_image
-  server_type = var.consul_type
-  location    = var.location
-  labels      = {
-      "Name"     = var.env_name
-      "Stage"    = var.env_stage
-      "CONSUL" = count.index
+module "consul_servers" {
+  source = "../modules/consul-cluster"
+  cluster_name      = "${var.cluster_name}-server"
+  cluster_size      = var.num_servers
+  image             = var.consul_image
+  server_type       = var.consul_type
+  location          = var.location
+  labels            = {
+                      "Name"   = var.env_name
+                      "Stage"  = var.env_stage
+                      "CONSUL" = count.index
   }
-  ssh_keys    = [ var.keyname ]
-  user_data   = <<-CONSUL_EOF
-                #cloud-config
-                users:
-                  - name: desixma
-                    groups: users, admin
-                    sudo: ALL=(ALL) NOPASSWD:ALL
-                    shell: /bin/bash
-                    ssh_authorized_keys:
-                      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDH6orvm7dzkp47YBEvxOk3cvvYR5io32OmbbnR96bGjlT7LZleL4oV/aozCAG4Axy6mgByULUsxG9l/JhmFa3zg0/rP9HrklX7oPNdAdN26QAquD6dgaZ3PFP7UXkkNaTTAmJcw02EaCNuCcGLGinKOi0LETN/K+BTfpL7Q5kUbWFnkDjJpiIjqZwNzBqU3G7OfbqpW+EbcCAouBkT+rE09lAUth5BXWgq7MhtF8LrfnIrrf0demkXqqYm2clXd5266M2LgCsu/LayMkO0ig4SH7DotgXxNeXLJQtu7E02rrxFTZuNvazQQ7TwBbZdDELmYB8BdRmTQjYZqMSw6zaf
-                packages:
-                  - fail2ban
-                  - ufw
-                package_update: true
-                package_upgrade: true
-                runcmd:
-                  - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
-                  - systemctl enable fail2ban
-                  - ufw allow OpenSSH
-                  - ufw enable
-                  - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
-                  - sed -i -e '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
-                  - sed -i -e '/^X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
-                  - sed -i -e '/^#MaxAuthTries/s/^.*$/MaxAuthTries 2/' /etc/ssh/sshd_config
-                  - sed -i -e '/^#AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
-                  - sed -i -e '/^#AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
-                  - sed -i -e '/^#AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
-                  - sed -i '$a AllowUsers desixma' /etc/ssh/sshd_config
-                  - sleep 5
-                  - apt update -y
-                  - reboot
-                CONSUL_EOF  
+  ssh_keys          = [ var.keyname ]
+  network_id        = data.terraform_remote_state.network.outputs.network_id
+  private_subnet_id = data.terraform_remote_state.network.outputs.private_subnet_id
+  cluster_tag_key   = var.cluster_tag_key
+  cluster_tag_value = var.cluster_name
+  user_data         = data.template_file.user_data_server.rendered
 }
 
-resource "hcloud_server_network" "internal_consul" {
-  count=3
-  network_id = data.terraform_remote_state.network.outputs.network_id
-  server_id  = element(hcloud_server.consul.*.id, count.index)
-  # this split is a temporary hack until Hetzner has "real" subnet objects and not just a shadow API. 
-  # the subnet id is a combination of network id and subnet CIDR, e.g. "123456-10.0.2.0/24")
-  ip = cidrhost(split("-", data.terraform_remote_state.network.outputs.private_subnet_id)[1], 10+count.index)
+# ---------------------------------------------------------------------------------------------------------------------
+# THE MULTIPART/MIXED USER DATA SCRIPT THAT WILL RUN ON EACH CONSUL SERVER INSTANCE WHEN IT'S BOOTING
+# This script will provide some basic hardening and configure and start Consul
+# ---------------------------------------------------------------------------------------------------------------------
+
+data "template_file" "user_data_server" {
+  template = file("${path.module}/user-data-server.mm")
+
+  vars = {
+    cluster_tag_key          = var.cluster_tag_key
+    cluster_tag_value        = var.cluster_name
+    enable_gossip_encryption = var.enable_gossip_encryption
+    gossip_encryption_key    = var.gossip_encryption_key
+    enable_rpc_encryption    = var.enable_rpc_encryption
+    ca_path                  = var.ca_path
+    cert_file_path           = var.cert_file_path
+    key_file_path            = var.key_file_path
+  }
 }
 
+output "consul_servers_cluster_tag_key" {
+  value = module.consul_servers.cluster_tag_key
+}
+
+output "consul_servers_cluster_tag_value" {
+  value = module.consul_servers.cluster_tag_value
+}
