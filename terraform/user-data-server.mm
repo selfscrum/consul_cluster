@@ -35,9 +35,9 @@ runcmd:
     - sed -i '$a AllowUsers desixma' /etc/ssh/sshd_config
 
     - sed -i -e '/^#DNS=/s/^.*$/DNS=213.133.100.100 213.133.99.99 213.133.98.98/' /etc/systemd/resolved.conf
-    - printf "network:\n    version: 2\n    ethernets:\n        enp7s0:\n            dhcp4: true\n            nameservers:\n                addresses: [9.9.9.9]\n            routes:\n                - to: 0.0.0.0/0\n                  via: 10.0.0.1\n                  on-link: true" > /etc/netplan/myplan.yaml
-    - rm -f /etc/netplan/50-cloud-init.yaml
-    - ip route add default via 10.0.0.1
+#    - printf "network:\n    version: 2\n    ethernets:\n        enp7s0:\n            dhcp4: true\n            nameservers:\n                addresses: [9.9.9.9]\n            routes:\n                - to: 0.0.0.0/0\n                  via: 10.0.0.1\n                  on-link: true" > /etc/netplan/myplan.yaml
+#    - rm -f /etc/netplan/50-cloud-init.yaml
+#    - ip route add default via 10.0.0.1
     - chmod +x /opt/consul/bin/run-consul
     - sleep 5
     - apt update -y
