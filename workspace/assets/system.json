@@ -20,5 +20,5 @@
     "gossip_encryption_key": "",
     "ca_path": "/opt/consul/tls/ca",
     "cert_file_path": "/opt/consul/tls/.consul.crt.pem",
-    "key_file_path": "/opt/consul/tls/.consul.key.pem",
+    "key_file_path": "/opt/consul/tls/.consul.key.pem"
 }
