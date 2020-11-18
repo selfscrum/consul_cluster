@@ -6,7 +6,7 @@
 
 resource "hcloud_server" "consul" {
   count       = var.cluster_size
-  name        = format("%s-%s-CONSUL-%d", var.env_stage, var.env_name, count.index)
+  name        = format("%s-%s-CONSUL-%d", var.cluster_stage, var.cluster_name, count.index)
   image       = var.image
   server_type = var.server_type
   location    = var.location

@@ -4,10 +4,14 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 variable "cluster_name" {
-  description = "The name of the Consul cluster (e.g. consul-stage). This variable is used to namespace all resources created by this module."
+  description = "The name of the Consul cluster (e.g. consul). This variable is used to namespace all resources created by this module."
   type        = string
 }
 
+variable "cluster_stage" {
+  description = "The stage of the Consul cluster (e.g. dev)"
+  type        = string
+}
 variable "user_data" {
   description = "A User Data script to execute while the server is booting. We recommend passing in a bash script that executes the run-consul script, which should have been installed in the Consul AMI by the install-consul module."
   type        = string
