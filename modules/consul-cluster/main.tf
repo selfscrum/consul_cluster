@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.12.26"
-}
-
 //   root_block_device {
 //     volume_type           = var.root_volume_type
 //     volume_size           = var.root_volume_size
