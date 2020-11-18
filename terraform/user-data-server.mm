@@ -41,7 +41,7 @@ runcmd:
     - chmod +x /opt/consul/bin/run-consul
     - sleep 5
     - apt update -y
-    - reboot
+#    - reboot
 
 cloud_final_modules:
 - [scripts-user, always]
