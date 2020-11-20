@@ -18,15 +18,15 @@
   "provisioners": [{
     "type": "file",
     "source": "{{user `ca_public_key_path`}}",
-    "destination": "/tmp/ca.crt.pem"
+    "destination": "/tmp/.ca.crt.pem"
   },{
     "type": "file",
     "source": "{{user `tls_public_key_path`}}",
-    "destination": "/tmp/consul.crt.pem"
+    "destination": "/tmp/.consul.crt.pem"
   },{
     "type": "file",
     "source": "{{user `tls_private_key_path`}}",
-    "destination": "/tmp/consul.key.pem"
+    "destination": "/tmp/.consul.key.pem"
   },{
     "type": "shell",
     "inline": ["mkdir -p /tmp/consul_cluster"]
@@ -38,7 +38,7 @@
     "type": "shell",
     "inline": [
       "sudo chmod +x /tmp/consul_cluster/modules/install-consul/install-consul",
-      "/tmp/consul_cluster/modules/install-consul/install-consul --version {{user `consul_version`}} --ca-file-path /tmp/ca.crt.pem --cert-file-path /tmp/consul.crt.pem --key-file-path /tmp/consul.key.pem",
+      "/tmp/consul_cluster/modules/install-consul/install-consul --version {{user `consul_version`}} --ca-file-path /tmp/.ca.crt.pem --cert-file-path /tmp/.consul.crt.pem --key-file-path /tmp/.consul.key.pem",
       "rm -rf /tmp/consul_cluster"
     ],
     "pause_before": "30s"
