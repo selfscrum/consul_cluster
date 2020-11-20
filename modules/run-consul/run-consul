@@ -3,7 +3,6 @@
 
 set -e
 
-readonly HCLOUD_TOKEN=${hcloud_token}
 readonly CONSUL_CONFIG_FILE="default.json"
 readonly SYSTEMD_CONFIG_PATH="/etc/systemd/system/consul.service"
 
