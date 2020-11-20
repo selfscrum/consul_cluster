@@ -62,18 +62,33 @@ module "consul_servers" {
   private_subnet_id = data.terraform_remote_state.network.outputs.private_subnet_id
   cluster_tag_key   = var.cluster_tag_key
   cluster_tag_value = var.cluster_name
-  user_data         = data.template_file.user_data_server.rendered
-}
-
+  user_data         = templatefile (
 # ---------------------------------------------------------------------------------------------------------------------
 # THE MULTIPART/MIXED USER DATA SCRIPT THAT WILL RUN ON EACH CONSUL SERVER INSTANCE WHEN IT'S BOOTING
 # This script will provide some basic hardening and configure and start Consul
 # ---------------------------------------------------------------------------------------------------------------------
+                      "${path.module}/user-data-server.mm",
+                        {
+                        hcloud_token             = var.access_token,
+                        cluster_tag_key          = var.cluster_tag_key,
+                        cluster_tag_value        = var.cluster_name,
+                        enable_gossip_encryption = var.enable_gossip_encryption,
+                        gossip_encryption_key    = var.gossip_encryption_key,
+                        enable_rpc_encryption    = var.enable_rpc_encryption,
+                        ca_path                  = var.ca_path,
+                        cert_file_path           = var.cert_file_path,
+                        key_file_path            = var.key_file_path
+                        }
+                      )
+#  data.template_file.user_data_server.rendered
+}
+
 
 data "template_file" "user_data_server" {
   template = file("${path.module}/user-data-server.mm")
 
   vars = {
+    hcloud_token             = var.access_token
     cluster_tag_key          = var.cluster_tag_key
     cluster_tag_value        = var.cluster_name
     enable_gossip_encryption = var.enable_gossip_encryption

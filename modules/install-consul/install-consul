@@ -1,9 +1,5 @@
 #!/bin/bash
-# This script can be used to install Consul and its dependencies. This script has been tested with the following
-# operating systems:
-# 1. Ubuntu 16.04
-# 1. Ubuntu 18.04
-# 1. Amazon Linux 2
+# This script can be used to install Consul and its dependencies.
 # Needed for packer. Modified by selfscrum to remove aws installation option in line 124 and 127
 
 set -e

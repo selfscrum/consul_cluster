@@ -9,9 +9,6 @@ script has been tested on the following operating systems:
 
 There is a good chance it will work on other flavors of Debian, CentOS, and RHEL as well.
 
-
-
-
 ## Quick start
 
 This script assumes you installed it, plus all of its dependencies (including Consul itself), using the [install-consul 

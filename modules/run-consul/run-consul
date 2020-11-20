@@ -1,8 +1,9 @@
 #!/bin/bash
-# This script is used to configure and run Consul on an AWS server.
+# This script is used to configure and run Consul on an hcloud server.
 
 set -e
 
+readonly HCLOUD_TOKEN=${hcloud_token}
 readonly CONSUL_CONFIG_FILE="default.json"
 readonly SYSTEMD_CONFIG_PATH="/etc/systemd/system/consul.service"
 
@@ -23,7 +24,7 @@ function print_usage {
   echo
   echo "Usage: run-consul [OPTIONS]"
   echo
-  echo "This script is used to configure and run Consul on an AWS server."
+  echo "This script is used to configure and run Consul on an hcloud server."
   echo
   echo "Options:"
   echo
@@ -31,7 +32,7 @@ function print_usage {
   echo -e "  --client\t\tIf set, run in client mode. Optional. Exactly one of --server or --client must be set."
   echo -e "  --cluster-tag-key\tAutomatically form a cluster with Instances that have this tag key and the tag value in --cluster-tag-value. Optional."
   echo -e "  --cluster-tag-value\tAutomatically form a cluster with Instances that have the tag key in --cluster-tag-key and this tag value. Optional."
-  echo -e "  --datacenter\t\tThe name of the datacenter Consul is running in. Optional. If not specified, will default to AWS region name."
+  echo -e "  --datacenter\t\tThe name of the datacenter Consul is running in. Optional. If not specified, will default to region name."
   echo -e "  --config-dir\t\tThe path to the Consul config folder. Optional. Default is the absolute path of '../config', relative to this script."
   echo -e "  --data-dir\t\tThe path to the Consul data folder. Optional. Default is the absolute path of '../data', relative to this script."
   echo -e "  --systemd-stdout\t\tThe StandardOutput option of the systemd unit.  Optional.  If not configured, uses systemd's default (journal)."
@@ -105,26 +106,16 @@ function assert_not_empty {
   fi
 }
 
-function lookup_path_in_instance_metadata {
-  local -r path="$1"
-  curl --silent --show-error --location "$EC2_INSTANCE_METADATA_URL/$path/"
-}
-
-function lookup_path_in_instance_dynamic_data {
-  local -r path="$1"
-  curl --silent --show-error --location "$EC2_INSTANCE_DYNAMIC_DATA_URL/$path/"
-}
-
 function get_instance_ip_address {
-  lookup_path_in_instance_metadata "local-ipv4"
+  hcloud server list | grep `hostname -f` | awk -F ' ' '{print $4}'
 }
 
 function get_instance_id {
-  lookup_path_in_instance_metadata "instance-id"
+  hcloud server list | grep `hostname -f` | awk -F ' ' '{print $1}'
 }
 
 function get_instance_region {
-  lookup_path_in_instance_dynamic_data "instance-identity/document" | jq -r ".region"
+  echo "eu-central"
 }
 
 function get_instance_tags {
@@ -135,10 +126,9 @@ function get_instance_tags {
 
   log_info "Looking up tags for Instance $instance_id in $instance_region"
   for (( i=1; i<="$MAX_RETRIES"; i++ )); do
-    tags=$(aws ec2 describe-tags \
-      --region "$instance_region" \
-      --filters "Name=resource-type,Values=instance" "Name=resource-id,Values=${instance_id}")
-    count_tags=$(echo $tags | jq -r ".Tags? | length")
+
+    tags=$(hcloud server describe -o json ${instance_id} | jq .labels )
+    count_tags=$(echo $tags | jq -r ".? | length")
     if [[ "$count_tags" -gt 0 ]]; then
       log_info "This Instance $instance_id in $instance_region has Tags."
       echo "$tags"
@@ -150,41 +140,29 @@ function get_instance_tags {
     fi
   done
 
-  log_error "Could not find Instance Tags for $instance_id in $instance_region after $MAX_RETRIES retries."
+  log_error "Could not find Instance Tags for server $instance_id in $instance_region after $MAX_RETRIES retries."
   exit 1
-}
-
-function get_asg_size {
-  local -r asg_name="$1"
-  local -r aws_region="$2"
-  local asg_json=""
-
-  log_info "Looking up the size of the Auto Scaling Group $asg_name in $aws_region"
-  asg_json=$(aws autoscaling describe-auto-scaling-groups --region "$aws_region" --auto-scaling-group-names "$asg_name")
-  echo "$asg_json" | jq -r '.AutoScalingGroups[0].DesiredCapacity'
 }
 
 function get_cluster_size {
   local -r instance_tags="$1"
-  local -r aws_region="$2"
 
-  local asg_name=""
-  asg_name=$(get_tag_value "$instance_tags" "$AWS_ASG_TAG_KEY")
-  if [[ -z "$asg_name" ]]; then
-    log_warn "This EC2 Instance does not appear to be part of an Auto Scaling Group, so cannot determine cluster size. Setting cluster size to 1."
+  local cluster_size_info=""
+  cluster_size_info=$(get_tag_value "$instance_tags" "cluster_size")
+  if [[ -z "$cluster_size_info" ]]; then
+    log_warn "This Instance does not appear to have a cluster size label, so cannot determine cluster size. Setting cluster size to 1."
     echo 1
   else
-    get_asg_size "$asg_name" "$aws_region"
+    echo "$cluster_size_info"
   fi
 }
 
-# Get the value for a specific tag from the tags JSON returned by the AWS describe-tags:
-# https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-tags.html
+# Get the value for a specific tag from the tags JSON returned by hcloud server.
 function get_tag_value {
   local -r tags="$1"
   local -r tag_key="$2"
 
-  echo "$tags" | jq -r ".Tags[] | select(.Key == \"$tag_key\") | .Value"
+  echo "$tags" | jq -r ".$tag_key"
 }
 
 function assert_is_installed {
@@ -245,7 +223,7 @@ function generate_consul_config {
     log_warn "Either the cluster tag key ($cluster_tag_key) or value ($cluster_tag_value) is empty. Will not automatically try to form a cluster based on EC2 tags."
   else
     retry_join_json=$(cat <<EOF
-"retry_join": ["provider=aws region=$instance_region tag_key=$cluster_tag_key tag_value=$cluster_tag_value"],
+"retry_join": ["provider=hcloud region=$instance_region tag_key=$cluster_tag_key tag_value=$cluster_tag_value"],
 EOF
 )
   fi
@@ -587,7 +565,6 @@ function run {
   fi
 
   assert_is_installed "systemctl"
-  assert_is_installed "aws"
   assert_is_installed "curl"
   assert_is_installed "jq"
 
