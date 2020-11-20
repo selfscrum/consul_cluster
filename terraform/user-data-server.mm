@@ -41,6 +41,7 @@ runcmd:
     - chmod +x /opt/consul/bin/run-consul
     - sleep 5
     - apt update -y
+    - apt install hcloud-cli
 #    - reboot
 
 cloud_final_modules:
