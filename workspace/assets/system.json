@@ -12,7 +12,7 @@
     "keyname" :"tfh_key",
     "network_zone" :"eu-central",
     "network_component" : "dev_boundary_net",
-    "cluster_name" : "dev-consul",
+    "cluster_name" : "consul",
     "num_servers" : 3,
     "cluster_tag_key" : "dev-consul",
     "enable_gossip_encryption": true,

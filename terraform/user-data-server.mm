@@ -52,10 +52,10 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment; filename="userdata.txt"
 
-#!/bin/bash
+#!/bin/bash -x
 # This script is meant to be run in the User Data of each Instance while it's booting. The script uses the
-# run-consul script to configure and start Consul in server mode. Note that this script assumes it's running in an AMI
-# built from the Packer template in examples/consul-ami/consul.json.
+# run-consul script to configure and start Consul in server mode. 
+Note that this script assumes it's running in an hcloud snapshot built from the Packer template in packer/consul.yaml.
 
 set -e
 
