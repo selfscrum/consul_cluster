@@ -213,7 +213,7 @@ function generate_consul_config {
   local instance_region=""
   local ui="false"
 
-  echo ">>>"`hostname -f`!<<<<"
+  echo ">>>"`hostname -f`"<<<<"
   echo ">>>"`env | grep HCLOUD`"<<<<"
   echo ">>>"`hcloud server`"<<<<"
   instance_id=$(get_instance_id)

@@ -7,7 +7,7 @@
     "env_stage" : "dev",
     "location" : "nbg1",
     "system_function" : "CONSUL",
-    "consul_image" :"26523342",
+    "consul_image" :"26524079",
     "consul_type" :"cpx11",
     "keyname" :"tfh_key",
     "network_zone" :"eu-central",
