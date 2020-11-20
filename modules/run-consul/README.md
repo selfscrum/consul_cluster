@@ -1,3 +1,9 @@
+# LICENSE INFO
+The orginal `run-consul` script is part of the [terraform-aws-consul](https://github.com/hashicorp/terraform-aws-consul) package and is licensed under Apache 2.0 conditions.
+
+I modified the script to replace the aws cli parts with the hcloud equivalents or other sensefull choices.
+The script is part of the packer template installation so make sure you recreate your snapshot on changes.
+
 # Consul Run Script
 
 This folder contains a script for configuring and running Consul on an [AWS](https://aws.amazon.com/) server. This 
