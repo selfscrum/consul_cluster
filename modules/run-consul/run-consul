@@ -203,9 +203,10 @@ function generate_consul_config {
   local -r redundancy_zone_tag="${18}"
   local -r disable_upgrade_migration="${19}"
   local -r upgrade_version_tag=${20}
+  local -r hcloud_token=${21}
   local -r config_path="$config_dir/$CONSUL_CONFIG_FILE"
 
-  shift 20
+  shift 21
   local -r recursors=("$@")
 
   local instance_id=""
@@ -213,9 +214,10 @@ function generate_consul_config {
   local instance_region=""
   local ui="false"
 
+  export HCLOUD_TOKEN=$hcloud_token
   echo ">>>"`hostname -f`"<<<<"
-  echo ">>>"`env | grep HCLOUD`"<<<<"
-  echo ">>>"`hcloud server`"<<<<"
+  echo ">>>"$HCLOUD_TOKEN"<<<<"
+  echo ">>>"`hcloud server list`"<<<<"
   instance_id=$(get_instance_id)
   instance_ip_address=$(get_instance_ip_address)
   instance_region=$(get_instance_region)
@@ -604,6 +606,13 @@ function run {
       assert_not_empty "--key_file_path" "$key_file_path"
     fi
 
+    hcloud_token = ""
+    for i in "${environment[@]}"; do
+        if [[ `echo $i | awk -F '=' '{print $1}'` == "HCLOUD_TOKEN" ]] ; then 
+            hcloud_token=`echo $i | awk -F '=' '{print $2}' | tr -d '"'`
+        fi
+    done
+
     generate_consul_config "$server" \
       "$config_dir" \
       "$user" \
@@ -624,6 +633,7 @@ function run {
       "$redundancy_zone_tag" \
       "$disable_upgrade_migration" \
       "$upgrade_version_tag" \
+      "$hcloud_token" \
       "${recursors[@]}"
   fi
 
