@@ -75,6 +75,6 @@ fi
 # as long as we don't have private network DNS, we need to hack into finding the leader...
 #/opt/consul/bin/run-consul --server --cluster-tag-key "${cluster_tag_key}" --cluster-tag-value "${cluster_tag_value}" --environment HCLOUD_TOKEN=\""${hcloud_token}"\" $gossip_encryption_configuration $rpc_encryption_configuration
 
-/opt/consul/bin/run-consul --server --cluster-tag-key "[ \"10.0.2.10\", \"10.0.2.11\", \"10.0.2.12\" ]" --cluster-tag-value "${cluster_tag_value}" --environment HCLOUD_TOKEN=\""${hcloud_token}"\" $gossip_encryption_configuration $rpc_encryption_configuration
+/opt/consul/bin/run-consul --server --cluster-tag-key "\"10.0.2.10\", \"10.0.2.11\", \"10.0.2.12\"" --cluster-tag-value "${cluster_tag_value}" --environment HCLOUD_TOKEN=\""${hcloud_token}"\" $gossip_encryption_configuration $rpc_encryption_configuration
 
 --//
