@@ -8,10 +8,6 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "cluster_stage" {
-  description = "The stage of the Consul cluster (e.g. dev)"
-  type        = string
-}
 variable "user_data" {
   description = "A User Data script to execute while the server is booting. We recommend passing in a bash script that executes the run-consul script, which should have been installed in the Consul AMI by the install-consul module."
   type        = string
@@ -71,7 +67,7 @@ variable "cluster_tag_key" {
 variable "cluster_tag_value" {
   description = "Add a tag with key var.cluster_tag_key and this value to each Instance. This can be used to automatically find other Consul nodes and form a cluster."
   type        = string
-  default     = "auto-join"
+  default     = "0"
 }
 
 variable "associate_public_ip_address" {
