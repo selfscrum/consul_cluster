@@ -225,8 +225,8 @@ function generate_consul_config {
   else
     retry_join_json=$(cat <<EOF
 "retry_join" : [ "$cluster_tag_key-$cluster_tag_value" ]
-"retry_join": ["provider=hcloud region=$instance_region tag_key=$cluster_tag_key tag_value=$cluster_tag_value"],
 EOF
+# hcloud - not supported: "retry_join": ["provider=hcloud region=$instance_region tag_key=$cluster_tag_key tag_value=$cluster_tag_value"],
 )
   fi
 
@@ -307,7 +307,6 @@ EOF
 EOF
 )
   log_info "Installing Consul config file in $config_path"
-  echo ">>>"$default_config_json"<<<"
   echo "$default_config_json" | jq '.' > "$config_path"
   chown "$user:$user" "$config_path"
 }
