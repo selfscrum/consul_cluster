@@ -72,6 +72,12 @@ if [[ "${enable_rpc_encryption}" == "true" && ! -z "${ca_path}" && ! -z "${cert_
   rpc_encryption_configuration="--enable-rpc-encryption --ca-path ${ca_path} --cert-file-path ${cert_file_path} --key-file-path ${key_file_path}"
 fi
 
-/opt/consul/bin/run-consul --server --cluster-tag-key "10.0.2.10" --cluster-tag-value "${cluster_tag_value}" --environment HCLOUD_TOKEN=\""${hcloud_token}"\" $gossip_encryption_configuration $rpc_encryption_configuration
+# as long as we don't have private network DNS, we need to hack into finding the leader...
+local tag_key = ""
+if [[ `hostname -f`!= "dev-consul-server-0" ]] ; then
+    tag_key="10.1.2.10"
+fi
+
+/opt/consul/bin/run-consul --server --cluster-tag-key $tag_key --cluster-tag-value "${cluster_tag_value}" --environment HCLOUD_TOKEN=\""${hcloud_token}"\" $gossip_encryption_configuration $rpc_encryption_configuration
 
 --//
