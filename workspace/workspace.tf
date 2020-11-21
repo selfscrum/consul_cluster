@@ -3,7 +3,7 @@ locals {
 }
 
 resource "tfe_workspace" "consul_cluster" {
-  name  = format("%s_%s", 
+  name  = format("%s-%s", 
                 local.system["env_stage"],
                 local.system["workspace"]
                 )
@@ -22,7 +22,7 @@ resource "tfe_variable" "ws_access_token" {
 
 resource "tfe_variable" "ws_env_name" {
     key          = "env_name"
-    value        = format("%s_%s", 
+    value        = format("%s-%s", 
                     lookup(local.system, "env_name"),
                     random_pet.name.id
                     )

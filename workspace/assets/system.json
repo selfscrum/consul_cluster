@@ -6,7 +6,7 @@
     "workspace" : "consul_cluster",
     "env_name" : "consul", 
     "env_stage" : "dev",
-    "consul_image" :"26570925",
+    "consul_image" :"26570958",
     "consul_type" :"cpx11",
     "network_zone" :"eu-central",
     "location" : "nbg1",
