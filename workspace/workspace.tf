@@ -96,28 +96,12 @@ resource "tfe_variable" "ws_network_component" {
     description  = "Hetzner Network Component where the new component will reside in"
 }
 
-resource "tfe_variable" "ws_cluster_name" {
-    key          = "cluster_name"
-    value        = lookup(local.system, "cluster_name")
-    category     = "terraform"
-    workspace_id = tfe_workspace.consul_cluster.id
-    description  = "cluster_name of the Component"
-}
-
 resource "tfe_variable" "ws_num_servers" {
     key          = "num_servers"
     value        = lookup(local.system, "num_servers")
     category     = "terraform"
     workspace_id = tfe_workspace.consul_cluster.id
     description  = "num_servers of the Component"
-}
-
-resource "tfe_variable" "ws_cluster_tag_key" {
-    key          = "cluster_tag_key"
-    value        = lookup(local.system, "cluster_tag_key")
-    category     = "terraform"
-    workspace_id = tfe_workspace.consul_cluster.id
-    description  = "cluster_tag_key of the Component"
 }
 
 resource "tfe_variable" "ws_enable_gossip_encryption" {
