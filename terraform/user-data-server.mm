@@ -73,7 +73,7 @@ if [[ "${enable_rpc_encryption}" == "true" && ! -z "${ca_path}" && ! -z "${cert_
 fi
 
 # as long as we don't have private network DNS, we need to hack into finding the leader...
-tag_key = ""
+tag_key=""
 if [[ `hostname -f`!= "dev-consul-server-0" ]] ; then
     tag_key="10.1.2.10"
 fi
