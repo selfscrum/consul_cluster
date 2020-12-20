@@ -3,7 +3,7 @@ locals {
 }
 
 resource "tfe_workspace" "consul_cluster" {
-  name  = format("%s-%s", 
+  name  = format("%s_%s", 
                 local.system["env_stage"],
                 local.system["workspace"]
                 )

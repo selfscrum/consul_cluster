@@ -15,6 +15,7 @@ resource "hcloud_server" "consul" {
   user_data   = var.user_data
 }
 
+/*
 resource "hcloud_server_network" "internal_consul" {
   count = var.cluster_size
   network_id = var.network_id
@@ -23,3 +24,4 @@ resource "hcloud_server_network" "internal_consul" {
   # the subnet id is a combination of network id and subnet CIDR, e.g. "123456-10.0.2.0/24")
   ip = cidrhost(split("-", var.private_subnet_id)[1], 10+count.index)
 }
+*/

@@ -38,6 +38,8 @@ runcmd:
 #    - printf "network:\n    version: 2\n    ethernets:\n        enp7s0:\n            dhcp4: true\n            nameservers:\n                addresses: [9.9.9.9]\n            routes:\n                - to: 0.0.0.0/0\n                  via: 10.0.0.1\n                  on-link: true" > /etc/netplan/myplan.yaml
 #    - rm -f /etc/netplan/50-cloud-init.yaml
 #    - ip route add default via 10.0.0.1
+    - echo "wg_server: ${network_server_ipv4_address}"
+    - echo "subnet: ${private_subnet}"
     - chmod +x /opt/consul/bin/run-consul
     - sleep 5
     - apt update -y
@@ -75,6 +77,6 @@ fi
 # as long as we don't have private network DNS, we need to hack into finding the leader...
 #/opt/consul/bin/run-consul --server --cluster-tag-key "${cluster_tag_key}" --cluster-tag-value "${cluster_tag_value}" --environment HCLOUD_TOKEN=\""${hcloud_token}"\" $gossip_encryption_configuration $rpc_encryption_configuration
 
-/opt/consul/bin/run-consul --server --cluster-tag-key "\"10.0.2.10\", \"10.0.2.11\", \"10.0.2.12\"" --cluster-tag-value "${cluster_tag_value}" --environment HCLOUD_TOKEN=\""${hcloud_token}"\" $gossip_encryption_configuration $rpc_encryption_configuration
+/opt/consul/bin/run-consul --server --cluster-subnet "${private_subnet}" --cluster-tag-value "${cluster_tag_value}" --environment HCLOUD_TOKEN=\""${hcloud_token}"\" $gossip_encryption_configuration $rpc_encryption_configuration
 
 --//

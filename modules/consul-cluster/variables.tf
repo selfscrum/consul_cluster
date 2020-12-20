@@ -33,15 +33,6 @@ variable "ssh_key" {
     type = string
 }
 
-variable "network_id" {
-    description = "network where the cluster will reside in"
-    type = string
-}
-
-variable "private_subnet_id" {
-    description = "subnet  where the cluster will reside in"
-    type = string
-}
 variable "labels" {
     description = "Labels that are set at the instance"
     type = map(string)
